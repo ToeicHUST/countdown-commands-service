@@ -65,7 +65,15 @@ describe('UpdateTargetCommandHandler', () => {
 
     expect(mockEventBus.publish).toHaveBeenCalledTimes(1);
     expect(mockEventBus.publish).toHaveBeenCalledWith(
-      expect.objectContaining({ target: existingTarget }),
+      expect.objectContaining({
+        topic: 'target-updated',
+        data: expect.objectContaining({
+          userId: existingTarget.userId,
+          targetId: existingTarget.id,
+          score: 500, // Giá trị mới đã update
+          targetDate: new Date('2026-12-31'), // Giá trị mới
+        }),
+      }),
     );
 
     expect(result.message).toBe('Target updated successfully.');

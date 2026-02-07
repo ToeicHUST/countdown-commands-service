@@ -2,12 +2,7 @@ import { Score } from '@toeichust/common';
 import { Target } from '../../../../core/domain/entities/target/target';
 import { TargetEntity } from '../../entities/target.entity/target.entity'; // (path adjust)
 
-/**
- * Adapter chuyển đổi giữa Domain Entity ↔ Persistence (ORM) Entity.
- * Giữ domain layer hoàn toàn không phụ thuộc typeorm.
- */
 export class DataAccessAdapter {
-  /** ORM Entity → Domain Entity (dùng khi đọc từ DB) */
   static toDomain(entity: TargetEntity): Target {
     return new Target({
       id: entity.id,
@@ -19,7 +14,6 @@ export class DataAccessAdapter {
     });
   }
 
-  /** Domain Entity → ORM Entity (dùng khi ghi vào DB) */
   static toPersistence(domain: Target): TargetEntity {
     const entity = new TargetEntity();
     entity.id = domain.id;
