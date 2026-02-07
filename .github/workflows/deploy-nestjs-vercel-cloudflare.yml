@@ -54,16 +54,16 @@ jobs:
         run: |
           npm run test:cov
 
-      - name: Test E2E
-        run: |
-          npm run test:e2e
-
       - name: Upload to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ env.CODECOV_TOKEN }}
           directory: ./coverage
           fail_ci_if_error: true
+
+      - name: Test E2E
+        run: |
+          npm run test:e2e
 
       - name: Generate Domain Metadata
         id: meta

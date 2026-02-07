@@ -30,8 +30,6 @@ describe('TargetOrmRepository', () => {
     repo = module.get<TargetOrmRepository>(TargetOrmRepository);
   });
 
-  // ── save ──
-
   describe('save', () => {
     it('should persist entity and return domain object', async () => {
       const domain = TargetFactory.create(
@@ -54,9 +52,7 @@ describe('TargetOrmRepository', () => {
     });
   });
 
-  // ── getOneById ──
-
-  describe('getOneById', () => {
+  describe('getOneByUserId', () => {
     it('should return domain Target when found', async () => {
       const entity = new TargetEntity();
       entity.id = 'found-id';
@@ -68,7 +64,7 @@ describe('TargetOrmRepository', () => {
 
       mockTypeOrmRepo.findOneBy.mockResolvedValue(entity);
 
-      const result = await repo.getOneByUserId('found-id');
+      const result = await repo.getOneByUserId('user-found');
 
       expect(result).not.toBeNull();
       expect(result!.id).toBe('found-id');
@@ -78,7 +74,7 @@ describe('TargetOrmRepository', () => {
     it('should return null when not found', async () => {
       mockTypeOrmRepo.findOneBy.mockResolvedValue(null);
 
-      const result = await repo.getOneByUserId('missing-id');
+      const result = await repo.getOneByUserId('missing-user');
 
       expect(result).toBeNull();
     });

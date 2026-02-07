@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Score } from '@toeichust/common';
-import { TargetUpdatedEvent } from '../../../../domain/events/target-updated.event/target-updated.event';
+import {
+  PublisherEventPort,
+  Score,
+  TargetUpdatedEvent,
+} from '@toeichust/common';
 import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';
-import { PublisherEventPort } from '../../../ports/event-publisher/repositories/publisher-event.port/publisher-event.port';
 import { TargetUpdatedEventHandler } from './target-updated.event-handler';
 
 describe('TargetUpdatedEventHandler', () => {
@@ -23,34 +25,45 @@ describe('TargetUpdatedEventHandler', () => {
   });
 
   it('should call publisherEventPort.publish with correct payload', async () => {
+    // 1. Tạo domain entity
     const target = TargetFactory.create(
       'user-abc',
       new Score(500),
       new Date('2026-08-10'),
     );
-    const event = new TargetUpdatedEvent(target);
+
+    // 2. Map dữ liệu từ domain entity sang Event (khớp với constructor trong comment)
+    const event = new TargetUpdatedEvent(
+      target.id,
+      target.userId,
+      target.score?.value ?? null,
+      target.targetDate,
+      target.createdAt,
+      target.updatedAt,
+    );
 
     await handler.handle(event);
 
     expect(mockPublisher.publish).toHaveBeenCalledTimes(1);
 
-    expect(mockPublisher.publish).toHaveBeenCalledWith('target-updated', {
-      eventName: 'target-updated',
-      data: {
-        targetId: target.id,
-        userId: 'user-abc',
-        score: 500,
-        targetDate: target.targetDate,
-        updatedAt: target.updatedAt,
-      },
-    });
+    // 3. Kiểm tra publish được gọi với đúng object event đã tạo
+    expect(mockPublisher.publish).toHaveBeenCalledWith(event);
   });
 
   it('should NOT throw even if publisher fails (swallow error)', async () => {
     mockPublisher.publish.mockRejectedValue(new Error('Network error'));
 
     const target = TargetFactory.create('user-err', new Score(100), new Date());
-    const event = new TargetUpdatedEvent(target);
+
+    // Tương tự, map dữ liệu chính xác cho test case này
+    const event = new TargetUpdatedEvent(
+      target.id,
+      target.userId,
+      target.score?.value ?? null,
+      target.targetDate,
+      target.createdAt,
+      target.updatedAt,
+    );
 
     await expect(handler.handle(event)).resolves.toBeUndefined();
   });

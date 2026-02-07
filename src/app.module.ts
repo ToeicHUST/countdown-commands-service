@@ -37,6 +37,7 @@ import { TargetModule } from './modules/target/target.module';
               'MICROSERVICES_COUNTDOWN_COMMANDS_SERVICE_DB_SCHEMA',
             ) || 'public',
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
 
           logging:
             vaultService.get<string>('MICROSERVICES_DB_DATABASE') ===

@@ -14,7 +14,6 @@ export class TargetEntity {
   @Column({ type: 'varchar', length: 255 })
   userId: string;
 
-  /** Score lưu dạng integer, nullable (null = chưa đặt mục tiêu điểm) */
   @Column({ type: 'int', nullable: true, default: null })
   score: number | null;
 
