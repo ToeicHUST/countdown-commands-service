@@ -5,7 +5,6 @@ import {
 import { StartedVaultContainer, VaultContainer } from '@testcontainers/vault';
 import Vault from 'node-vault';
 import { Wait } from 'testcontainers';
-import { VALID_TOKEN } from './constants/bearer-token.constant';
 
 jest.setTimeout(60000);
 
@@ -103,8 +102,6 @@ async function seedVaultSecrets(): Promise<void> {
 
   await client.write(VAULT_DATA_PATH, {
     data: {
-      DECK_LOG_BEARER_TOKEN: VALID_TOKEN,
-
       MICROSERVICES_DB_HOST: postgresContainer.getHost(),
       MICROSERVICES_DB_PORT: postgresContainer.getPort(),
       MICROSERVICES_DB_USERNAME: postgresContainer.getUsername(),
