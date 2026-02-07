@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { TargetFactory } from '../../../core/domain/factories/target.factory/target.factory';
-import { DataaccessAdapter } from '../../adapters/dataaccess.adapter/dataaccess.adapter';
+import { Score } from '../../../../../../lib/value-objects/score/score';
+import { TargetFactory } from '../../../../core/domain/factories/target.factory/target.factory';
+import { DataAccessAdapter } from '../../adapters/data-access.adapter/data-access.adapter';
 import { TargetEntity } from '../../entities/target.entity/target.entity';
 import { TargetOrmRepository } from './target.orm-repository';
 
@@ -14,7 +15,6 @@ describe('TargetOrmRepository', () => {
     mockTypeOrmRepo = {
       save: jest.fn(),
       findOneBy: jest.fn(),
-      delete: jest.fn(),
     } as any;
 
     const module: TestingModule = await Test.createTestingModule({
@@ -36,10 +36,10 @@ describe('TargetOrmRepository', () => {
     it('should persist entity and return domain object', async () => {
       const domain = TargetFactory.create(
         'user-1',
-        450,
+        new Score(450),
         new Date('2026-06-01'),
       );
-      const ormEntity = DataaccessAdapter.toPersistence(domain);
+      const ormEntity = DataAccessAdapter.toPersistence(domain);
 
       // Mock: typeorm save trả lại entity đã save
       mockTypeOrmRepo.save.mockResolvedValue(ormEntity);
@@ -81,29 +81,6 @@ describe('TargetOrmRepository', () => {
       const result = await repo.getOneByUserId('missing-id');
 
       expect(result).toBeNull();
-    });
-  });
-
-  // ── delete ──
-
-  describe('delete', () => {
-    it('should return true when deletion is successful', async () => {
-      mockTypeOrmRepo.delete.mockResolvedValue({ affected: 1 } as any);
-
-      const domain = TargetFactory.create('user-del', 200, null);
-      const result = await repo.delete(domain);
-
-      expect(result).toBe(true);
-      expect(mockTypeOrmRepo.delete).toHaveBeenCalledWith(domain.id);
-    });
-
-    it('should return false when nothing was deleted', async () => {
-      mockTypeOrmRepo.delete.mockResolvedValue({ affected: 0 } as any);
-
-      const domain = TargetFactory.create('user-nodel', 200, null);
-      const result = await repo.delete(domain);
-
-      expect(result).toBe(false);
     });
   });
 });

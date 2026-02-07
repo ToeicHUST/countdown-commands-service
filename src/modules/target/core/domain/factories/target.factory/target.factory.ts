@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
+import { Score } from '../../../../../../lib/value-objects/score/score';
 import { Target } from '../../entities/target/target';
-import { Score } from '../../value-objects/score/score';
 
 export class TargetFactory {
   static create(

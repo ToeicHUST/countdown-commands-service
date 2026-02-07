@@ -1,10 +1,10 @@
-import { Target } from '../../../core/domain/entities/target/target';
-import { TargetFactory } from '../../../core/domain/factories/target.factory/target.factory';
-import { Score } from '../../../core/domain/value-objects/score/score';
+import { Score } from '../../../../../../lib/value-objects/score/score';
+import { Target } from '../../../../core/domain/entities/target/target';
+import { TargetFactory } from '../../../../core/domain/factories/target.factory/target.factory';
 import { TargetEntity } from '../../entities/target.entity/target.entity';
-import { DataaccessAdapter } from './dataaccess.adapter';
+import { DataAccessAdapter } from './data-access.adapter';
 
-describe('DataaccessAdapter', () => {
+describe('DataAccessAdapter', () => {
   // ── toDomain ──
 
   describe('toDomain', () => {
@@ -17,7 +17,7 @@ describe('DataaccessAdapter', () => {
       entity.createdAt = new Date('2026-01-01');
       entity.updatedAt = new Date('2026-01-02');
 
-      const domain = DataaccessAdapter.toDomain(entity);
+      const domain = DataAccessAdapter.toDomain(entity);
 
       expect(domain).toBeInstanceOf(Target);
       expect(domain.id).toBe('uuid-1');
@@ -36,7 +36,7 @@ describe('DataaccessAdapter', () => {
       entity.createdAt = new Date();
       entity.updatedAt = new Date();
 
-      const domain = DataaccessAdapter.toDomain(entity);
+      const domain = DataAccessAdapter.toDomain(entity);
 
       expect(domain.score).toBeNull();
       expect(domain.targetDate).toBeNull();
@@ -49,11 +49,11 @@ describe('DataaccessAdapter', () => {
     it('should convert domain Target with score to TargetEntity', () => {
       const domain = TargetFactory.create(
         'user-x',
-        450,
+        new Score(450),
         new Date('2026-12-31'),
       );
 
-      const entity = DataaccessAdapter.toPersistence(domain);
+      const entity = DataAccessAdapter.toPersistence(domain);
 
       expect(entity).toBeInstanceOf(TargetEntity);
       expect(entity.id).toBe(domain.id);
@@ -65,7 +65,7 @@ describe('DataaccessAdapter', () => {
     it('should convert domain Target with null score to entity with null', () => {
       const domain = TargetFactory.create('user-y', null, null);
 
-      const entity = DataaccessAdapter.toPersistence(domain);
+      const entity = DataAccessAdapter.toPersistence(domain);
 
       expect(entity.score).toBeNull();
       expect(entity.targetDate).toBeNull();
@@ -76,12 +76,12 @@ describe('DataaccessAdapter', () => {
   it('should survive a round-trip: Domain → Persistence → Domain', () => {
     const original = TargetFactory.create(
       'user-rt',
-      300,
+      new Score(300),
       new Date('2026-03-15'),
     );
 
-    const entity = DataaccessAdapter.toPersistence(original);
-    const restored = DataaccessAdapter.toDomain(entity);
+    const entity = DataAccessAdapter.toPersistence(original);
+    const restored = DataAccessAdapter.toDomain(entity);
 
     expect(restored.id).toBe(original.id);
     expect(restored.userId).toBe(original.userId);

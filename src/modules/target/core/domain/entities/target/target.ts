@@ -1,4 +1,4 @@
-import { Score } from '../../value-objects/score/score';
+import { Score } from '../../../../../../lib/value-objects/score/score';
 
 export class Target {
   readonly id: string;

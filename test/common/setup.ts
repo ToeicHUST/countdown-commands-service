@@ -1,10 +1,10 @@
-import { Wait } from 'testcontainers';
-import { VaultContainer, StartedVaultContainer } from '@testcontainers/vault';
-import Vault from 'node-vault';
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
+import { StartedVaultContainer, VaultContainer } from '@testcontainers/vault';
+import Vault from 'node-vault';
+import { Wait } from 'testcontainers';
 import { VALID_TOKEN } from './constants/bearer-token.constant';
 
 jest.setTimeout(60000);
@@ -111,6 +111,7 @@ async function seedVaultSecrets(): Promise<void> {
       MICROSERVICES_DB_PASSWORD: postgresContainer.getPassword(),
       MICROSERVICES_DB_DATABASE: postgresContainer.getDatabase(),
       MICROSERVICES_COUNTDOWN_COMMANDS_SERVICE_DB_SCHEMA: 'public',
+      SUPABASE_URL: 'https://toeichust.supabase.co',
     },
   });
 

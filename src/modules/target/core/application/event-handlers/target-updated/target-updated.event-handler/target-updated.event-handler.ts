@@ -13,8 +13,9 @@ export class TargetUpdatedEventHandler implements IEventHandler<TargetUpdatedEve
     try {
       this.logger.debug(`event: ${JSON.stringify(event)}`);
 
+      const eventName = 'target-updated';
       const payload = {
-        eventName: TargetUpdatedEvent.name,
+        eventName: eventName,
 
         data: {
           targetId: event.target.id,
@@ -25,7 +26,7 @@ export class TargetUpdatedEventHandler implements IEventHandler<TargetUpdatedEve
         },
       };
 
-      await this.publisherEventPort.publish(TargetUpdatedEvent.name, payload);
+      await this.publisherEventPort.publish(eventName, payload);
       this.logger.log(`Event published successfully.`);
     } catch (error) {
       this.logger.error(`error: ${error.message}`, error.stack);

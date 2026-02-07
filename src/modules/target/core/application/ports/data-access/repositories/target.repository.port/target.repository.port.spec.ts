@@ -6,7 +6,6 @@ describe('TargetRepositoryPort', () => {
     expect(typeof TargetRepositoryPort).toBe('function');
     expect(TargetRepositoryPort.prototype.save).toBeUndefined();
     expect(TargetRepositoryPort.prototype.getOneByUserId).toBeUndefined();
-    expect(TargetRepositoryPort.prototype.delete).toBeUndefined();
   });
 
   it('should be implementable as a concrete class', () => {
@@ -16,9 +15,6 @@ describe('TargetRepositoryPort', () => {
       }
       async getOneByUserId(id: string) {
         return null;
-      }
-      async delete(entity: any) {
-        return true;
       }
     }
 

@@ -1,9 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 
-export async function main(module: any) {
-  const moduleFixture: TestingModule = await Test.createTestingModule({
+export async function main(
+  module: any,
+  moduleBuilder?: (builder: TestingModuleBuilder) => void,
+) {
+  let builder = Test.createTestingModule({
     imports: [module],
-  }).compile();
+  });
+
+  if (moduleBuilder) {
+    moduleBuilder(builder);
+  }
+
+  const moduleFixture: TestingModule = await builder.compile();
 
   const app = moduleFixture.createNestApplication();
   app.setGlobalPrefix('api');

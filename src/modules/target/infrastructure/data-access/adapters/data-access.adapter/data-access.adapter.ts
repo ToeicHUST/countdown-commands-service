@@ -1,12 +1,12 @@
+import { Score } from '../../../../../../lib/value-objects/score/score';
 import { Target } from '../../../../core/domain/entities/target/target';
-import { Score } from '../../../../core/domain/value-objects/score/score';
 import { TargetEntity } from '../../entities/target.entity/target.entity'; // (path adjust)
 
 /**
  * Adapter chuyển đổi giữa Domain Entity ↔ Persistence (ORM) Entity.
  * Giữ domain layer hoàn toàn không phụ thuộc typeorm.
  */
-export class DataaccessAdapter {
+export class DataAccessAdapter {
   /** ORM Entity → Domain Entity (dùng khi đọc từ DB) */
   static toDomain(entity: TargetEntity): Target {
     return new Target({

@@ -1,9 +1,8 @@
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DomainException } from '../../../domain/exceptions/domain.exception/domain.exception';
-import { InvalidScoreException } from '../../../domain/exceptions/invalid-score.exception/invalid-score.exception';
-import { TargetFactory } from '../../../domain/factories/target.factory/target.factory';
-import { TargetRepositoryPort } from '../../ports/dataaccess/repositories/target.repository.port/target.repository.port';
+import { InvalidScoreException } from '../../../../../../../lib/exceptions/invalid-score.exception/invalid-score.exception';
+import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';
+import { TargetRepositoryPort } from '../../../ports/data-access/repositories/target.repository.port/target.repository.port';
 import { UpdateTargetCommand } from '../update-target.command/update-target.command';
 import { UpdateTargetCommandHandler } from './update-target.command-handler';
 
@@ -12,7 +11,6 @@ describe('UpdateTargetCommandHandler', () => {
   let mockRepository: jest.Mocked<TargetRepositoryPort>;
   let mockEventBus: { publish: jest.Mock };
 
-  // Helper: tạo 1 Target sample
   const createSampleTarget = (overrides: Partial<any> = {}) => {
     return TargetFactory.create(
       overrides.userId ?? 'user-original',
@@ -24,7 +22,7 @@ describe('UpdateTargetCommandHandler', () => {
   beforeEach(async () => {
     mockRepository = {
       save: jest.fn(),
-      getOneById: jest.fn(),
+      getOneByUserId: jest.fn(),
       delete: jest.fn(),
     } as any;
 
@@ -43,88 +41,63 @@ describe('UpdateTargetCommandHandler', () => {
     );
   });
 
-  // ────────────────────────────────────────────────────────────────
-  // ✅ Happy path
-  // ────────────────────────────────────────────────────────────────
   it('should update target and publish TargetUpdatedEvent', async () => {
     const existingTarget = createSampleTarget();
-    mockRepository.getOneById.mockResolvedValue(existingTarget);
+
+    mockRepository.getOneByUserId.mockResolvedValue(existingTarget);
     mockRepository.save.mockImplementation(async (t) => t);
 
     const command = new UpdateTargetCommand(
-      existingTarget.id,
-      'user-new',
+      existingTarget.userId,
       500,
       new Date('2026-12-31'),
     );
 
     const result = await handler.execute(command);
 
-    // Verify repository calls
-    expect(mockRepository.getOneById).toHaveBeenCalledWith(existingTarget.id);
+    expect(mockRepository.getOneByUserId).toHaveBeenCalledWith(
+      existingTarget.userId,
+    );
     expect(mockRepository.save).toHaveBeenCalledWith(existingTarget);
 
-    // Verify domain mutation
-    expect(existingTarget.userId).toBe('user-new');
+    expect(existingTarget.userId).toBe('user-original');
     expect(existingTarget.score?.value).toBe(500);
 
-    // Verify event published
     expect(mockEventBus.publish).toHaveBeenCalledTimes(1);
     expect(mockEventBus.publish).toHaveBeenCalledWith(
       expect.objectContaining({ target: existingTarget }),
     );
 
-    // Verify response
     expect(result.message).toBe('Target updated successfully.');
     expect(result.data).toBe(existingTarget);
   });
 
-  it('should handle null scoreValue (keep existing score)', async () => {
-    const existingTarget = createSampleTarget({ scoreValue: 200 });
-    mockRepository.getOneById.mockResolvedValue(existingTarget);
+  it('should create new target when target not found (Upsert logic)', async () => {
+    mockRepository.getOneByUserId.mockResolvedValue(null);
     mockRepository.save.mockImplementation(async (t) => t);
 
-    // scoreValue = null → không đổi score
     const command = new UpdateTargetCommand(
-      existingTarget.id,
-      'user-new',
-      null, // null → giữ nguyên
-      new Date('2027-01-01'),
-    );
-
-    await handler.execute(command);
-
-    // Score vẫn là giá trị gốc (200) — updateTarget nhận null sẽ không chạm score
-    expect(existingTarget.score?.value).toBe(200);
-  });
-
-  // ────────────────────────────────────────────────────────────────
-  // ❌ Error cases
-  // ────────────────────────────────────────────────────────────────
-  it('should throw DomainException when target not found', async () => {
-    mockRepository.getOneById.mockResolvedValue(null);
-
-    const command = new UpdateTargetCommand(
-      'non-exist-id',
-      'user-1',
+      'new-user-id',
       100,
-      null,
+      new Date('2026-12-31'),
     );
 
-    await expect(handler.execute(command)).rejects.toThrow(DomainException);
-    expect(mockEventBus.publish).not.toHaveBeenCalled();
+    const result = await handler.execute(command);
+
+    expect(mockRepository.save).toHaveBeenCalled();
+    expect(mockEventBus.publish).toHaveBeenCalled();
+    expect(result.message).toBe('Target updated successfully.');
   });
 
   it('should throw InvalidScoreException when score is invalid', async () => {
     const existingTarget = createSampleTarget();
-    mockRepository.getOneById.mockResolvedValue(existingTarget);
+    mockRepository.getOneByUserId.mockResolvedValue(existingTarget);
 
     // 9999 > MAX (990) → InvalidScoreException
     const command = new UpdateTargetCommand(
-      existingTarget.id,
-      'user-1',
+      existingTarget.userId,
       9999,
-      null,
+      new Date('2026-12-31'),
     );
 
     await expect(handler.execute(command)).rejects.toThrow(
@@ -136,13 +109,12 @@ describe('UpdateTargetCommandHandler', () => {
 
   it('should throw InvalidScoreException when score is not multiple of 5', async () => {
     const existingTarget = createSampleTarget();
-    mockRepository.getOneById.mockResolvedValue(existingTarget);
+    mockRepository.getOneByUserId.mockResolvedValue(existingTarget);
 
     const command = new UpdateTargetCommand(
-      existingTarget.id,
-      'user-1',
+      existingTarget.userId,
       123,
-      null,
+      new Date('2026-12-31'),
     );
 
     await expect(handler.execute(command)).rejects.toThrow(

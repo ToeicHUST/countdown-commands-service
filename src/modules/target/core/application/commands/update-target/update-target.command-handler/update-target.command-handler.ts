@@ -1,10 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+import { Score } from '../../../../../../../lib/value-objects/score/score';
 import { Target } from '../../../../domain/entities/target/target';
 import { TargetUpdatedEvent } from '../../../../domain/events/target-updated.event/target-updated.event';
 import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';
-import { Score } from '../../../../domain/value-objects/score/score';
-import { TargetRepositoryPort } from '../../../ports/dataaccess/repositories/target.repository.port/target.repository.port';
+import { TargetRepositoryPort } from '../../../ports/data-access/repositories/target.repository.port/target.repository.port';
 import { UpdateTargetCommand } from '../update-target.command/update-target.command';
 
 @CommandHandler(UpdateTargetCommand)
@@ -18,30 +18,15 @@ export class UpdateTargetCommandHandler implements ICommandHandler<UpdateTargetC
 
   async execute(
     payload: UpdateTargetCommand,
-  ): Promise<{ message: string; data?: any }> {
+  ): Promise<{ message: string; data: Target }> {
     try {
       this.logger.debug(`payload: ${JSON.stringify(payload)}`);
 
       let target = await this.targetRepository.getOneByUserId(payload.userId);
 
-      let targetSaved: Target;
-
-      if (!target) {
+      if (target) {
         this.logger.log(
-          `Target not found for userId: ${payload.userId}. Creating new target.`,
-        );
-
-        const newTarget = TargetFactory.create(
-          payload.userId,
-          new Score(payload.scoreValue),
-          payload.targetDate,
-        );
-
-        targetSaved = await this.targetRepository.save(newTarget);
-        this.logger.log(`New target created: ${JSON.stringify(targetSaved)}`);
-      } else {
-        this.logger.log(
-          `Target found for userId: ${payload.userId}. Updating target.`,
+          `Target found for userId: ${payload.userId}. Updating...`,
         );
 
         target.updateTarget(
@@ -49,20 +34,30 @@ export class UpdateTargetCommandHandler implements ICommandHandler<UpdateTargetC
           new Score(payload.scoreValue),
           payload.targetDate,
         );
-
-        targetSaved = await this.targetRepository.save(target);
-        this.logger.log(`Target updated: ${JSON.stringify(targetSaved)}`);
+      } else {
+        this.logger.log(
+          `Target not found for userId: ${payload.userId}. Creating new...`,
+        );
+        target = TargetFactory.create(
+          payload.userId,
+          new Score(payload.scoreValue),
+          payload.targetDate,
+        );
       }
 
-      this.eventBus.publish(new TargetUpdatedEvent(targetSaved));
+      const savedTarget = await this.targetRepository.save(target);
+      this.logger.log(`Target saved successfully: ${savedTarget.id}`);
+
+      this.eventBus.publish(new TargetUpdatedEvent(savedTarget));
 
       return {
         message: 'Target updated successfully.',
-        data: targetSaved,
+        data: savedTarget,
       };
     } catch (error) {
       this.logger.error(`error: ${error.message}`, error.stack);
-      return { message: error.message };
+      // return { message: error.message };
+      throw error;
     }
   }
 }

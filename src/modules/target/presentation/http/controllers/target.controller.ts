@@ -8,8 +8,8 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { Auth, CurrentUserId } from '@toeichust/common';
 import { UpdateTargetCommand } from '../../../core/application/commands/update-target/update-target.command/update-target.command';
-import { UpdateTargetRequestDto } from '../dtos/request.dto/update-target.request.dto';
-import { UpdateTargetResponseDto } from '../dtos/response.dto/update-target.response.dto';
+import { UpdateTargetRequestDto } from '../dto/request.dto/update-target.request.dto';
+import { UpdateTargetResponseDto } from '../dto/response.dto/update-target.response.dto';
 
 @Controller('target')
 export class TargetController {
@@ -22,7 +22,7 @@ export class TargetController {
     @Body() request: UpdateTargetRequestDto,
   ): Promise<UpdateTargetResponseDto> {
     try {
-      const result = await this.commandBus.execute<UpdateTargetCommand, any>(
+      const result = await this.commandBus.execute(
         new UpdateTargetCommand(userId, request.scoreValue, request.targetDate),
       );
 

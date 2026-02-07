@@ -1,5 +1,5 @@
+import { Score } from '../../../../../../lib/value-objects/score/score';
 import { TargetFactory } from '../../factories/target.factory/target.factory';
-import { Score } from '../../value-objects/score/score';
 
 describe('Target Entity', () => {
   it('should initialize successfully via Factory', () => {
@@ -7,7 +7,11 @@ describe('Target Entity', () => {
     const scoreVal = 450;
     const targetDate = new Date('2026-02-02');
 
-    const target = TargetFactory.create(userId, scoreVal, targetDate);
+    const target = TargetFactory.create(
+      userId,
+      new Score(scoreVal),
+      targetDate,
+    );
 
     expect(target).toBeDefined();
     expect(target.id).toBeDefined();
@@ -18,7 +22,7 @@ describe('Target Entity', () => {
   it('should update data and updatedAt timestamp correctly', () => {
     const target = TargetFactory.create(
       'user-old',
-      100,
+      new Score(100),
       new Date('2025-01-01'),
     );
 

@@ -12,9 +12,7 @@ export class EventPublisherConfig {
     );
 
     if (!this.MICROSERVICES_WEBHOOK_EVENT_URL) {
-      this.logger.warn(
-        'Cảnh báo: MICROSERVICES_WEBHOOK_EVENT_URL chưa được thiết lập!',
-      );
+      this.logger.warn('MICROSERVICES_WEBHOOK_EVENT_URL is not set!');
     }
   }
 }

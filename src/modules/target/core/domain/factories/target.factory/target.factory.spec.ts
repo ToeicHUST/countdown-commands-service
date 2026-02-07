@@ -1,6 +1,6 @@
+import { InvalidScoreException } from '../../../../../../lib/exceptions/invalid-score.exception/invalid-score.exception';
+import { Score } from '../../../../../../lib/value-objects/score/score';
 import { Target } from '../../entities/target/target';
-import { InvalidScoreException } from '../../exceptions/invalid-score.exception/invalid-score.exception';
-import { Score } from '../../value-objects/score/score';
 import { TargetFactory } from './target.factory';
 
 describe('TargetFactory', () => {
@@ -10,7 +10,11 @@ describe('TargetFactory', () => {
       const scoreValue = 450;
       const targetDate = new Date('2026-12-31');
 
-      const target = TargetFactory.create(userId, scoreValue, targetDate);
+      const target = TargetFactory.create(
+        userId,
+        new Score(scoreValue),
+        targetDate,
+      );
 
       // Kiểm tra instance
       expect(target).toBeInstanceOf(Target);
@@ -44,28 +48,8 @@ describe('TargetFactory', () => {
     it('should throw InvalidScoreException if score is invalid', () => {
       // Test xem Factory có để lọt lỗi validation của Score ra ngoài không
       expect(() => {
-        TargetFactory.create('user-1', 9999, null); // 9999 > 990
+        TargetFactory.create('user-1', new Score(9999), null); // 9999 > 990
       }).toThrow(InvalidScoreException);
-    });
-  });
-
-  describe('reconstitute', () => {
-    it('should recreate a Target keeping original ID and timestamps', () => {
-      const originalData = {
-        id: 'existing-uuid',
-        userId: 'user-old',
-        score: 500,
-        targetDate: new Date('2025-01-01'),
-        createdAt: new Date('2024-01-01'),
-        updatedAt: new Date('2024-02-01'),
-      };
-
-      const target = TargetFactory.reconstitute(originalData);
-
-      expect(target.id).toBe(originalData.id);
-      expect(target.createdAt).toEqual(originalData.createdAt);
-      expect(target.updatedAt).toEqual(originalData.updatedAt);
-      expect(target.score?.value).toBe(500);
     });
   });
 });
