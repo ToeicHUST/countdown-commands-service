@@ -1,4 +1,4 @@
-import { Score } from '../../../../../../lib/value-objects/score/score';
+import { Score } from '@toeichust/common';
 import { Target } from '../../../../core/domain/entities/target/target';
 import { TargetEntity } from '../../entities/target.entity/target.entity'; // (path adjust)
 

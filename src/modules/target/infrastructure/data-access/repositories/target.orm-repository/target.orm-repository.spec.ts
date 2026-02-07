@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Score } from '@toeichust/common';
 import { Repository } from 'typeorm';
-import { Score } from '../../../../../../lib/value-objects/score/score';
 import { TargetFactory } from '../../../../core/domain/factories/target.factory/target.factory';
 import { DataAccessAdapter } from '../../adapters/data-access.adapter/data-access.adapter';
 import { TargetEntity } from '../../entities/target.entity/target.entity';

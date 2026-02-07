@@ -1,4 +1,4 @@
-import { Score } from '../../../../../../lib/value-objects/score/score';
+import { Score } from '@toeichust/common';
 import { TargetFactory } from '../../factories/target.factory/target.factory';
 
 describe('Target Entity', () => {

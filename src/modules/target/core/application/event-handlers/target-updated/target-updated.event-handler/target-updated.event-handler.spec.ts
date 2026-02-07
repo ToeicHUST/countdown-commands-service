@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Score } from '../../../../../../../lib/value-objects/score/score';
+import { Score } from '@toeichust/common';
 import { TargetUpdatedEvent } from '../../../../domain/events/target-updated.event/target-updated.event';
 import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';
 import { PublisherEventPort } from '../../../ports/event-publisher/repositories/publisher-event.port/publisher-event.port';

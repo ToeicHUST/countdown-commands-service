@@ -1,5 +1,4 @@
-import { InvalidScoreException } from '../../../../../../lib/exceptions/invalid-score.exception/invalid-score.exception';
-import { Score } from '../../../../../../lib/value-objects/score/score';
+import { InvalidScoreException, Score } from '@toeichust/common';
 import { Target } from '../../entities/target/target';
 import { TargetFactory } from './target.factory';
 

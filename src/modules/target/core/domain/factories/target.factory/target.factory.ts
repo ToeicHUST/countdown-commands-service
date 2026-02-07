@@ -1,5 +1,5 @@
+import { Score } from '@toeichust/common';
 import { randomUUID } from 'crypto';
-import { Score } from '../../../../../../lib/value-objects/score/score';
 import { Target } from '../../entities/target/target';
 
 export class TargetFactory {

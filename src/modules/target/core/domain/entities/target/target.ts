@@ -1,4 +1,4 @@
-import { Score } from '../../../../../../lib/value-objects/score/score';
+import { Score } from '@toeichust/common';
 
 export class Target {
   readonly id: string;

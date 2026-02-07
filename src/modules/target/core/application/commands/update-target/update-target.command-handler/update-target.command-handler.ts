@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
-import { Score } from '../../../../../../../lib/value-objects/score/score';
+import { Score } from '@toeichust/common';
 import { Target } from '../../../../domain/entities/target/target';
 import { TargetUpdatedEvent } from '../../../../domain/events/target-updated.event/target-updated.event';
 import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';

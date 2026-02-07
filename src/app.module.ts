@@ -2,10 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule, VaultModule, VaultService } from '@toeichust/common';
+import {
+  AuthModule,
+  ErrorHandlerFilter,
+  VaultModule,
+  VaultService,
+} from '@toeichust/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ErrorHandlerFilter } from './lib/filters/error-handler.filter';
 import { TargetModule } from './modules/target/target.module';
 
 @Module({

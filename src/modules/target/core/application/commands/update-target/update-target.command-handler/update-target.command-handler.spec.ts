@@ -1,6 +1,6 @@
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InvalidScoreException } from '../../../../../../../lib/exceptions/invalid-score.exception/invalid-score.exception';
+import { InvalidScoreException } from '@toeichust/common';
 import { TargetFactory } from '../../../../domain/factories/target.factory/target.factory';
 import { TargetRepositoryPort } from '../../../ports/data-access/repositories/target.repository.port/target.repository.port';
 import { UpdateTargetCommand } from '../update-target.command/update-target.command';
