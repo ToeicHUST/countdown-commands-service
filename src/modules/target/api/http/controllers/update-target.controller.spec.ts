@@ -16,7 +16,6 @@ describe('UpdateTargetController', () => {
       providers: [
         {
           provide: CommandBus,
-
           useValue: { execute: mockExecute },
         },
       ],
