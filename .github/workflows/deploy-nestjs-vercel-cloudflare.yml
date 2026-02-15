@@ -120,12 +120,21 @@ jobs:
           path: node_modules
           key: ${{ needs.install-deps.outputs.deps-cache-key }}
 
-      - name: Generate Domain Metadata
+      - name: Generate Metadata
         id: meta
         run: |
           REPO_NAME_LOW=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g')
+          echo "name=$REPO_NAME_LOW" >> $GITHUB_OUTPUT
           echo "full_domain=${REPO_NAME_LOW}.${{ secrets.DOMAIN }}" >> $GITHUB_OUTPUT
           echo "subdomain=${REPO_NAME_LOW}" >> $GITHUB_OUTPUT
+
+      - name: Initialize Vercel Project
+        run: |
+          PROJECT_NAME="${{ steps.meta.outputs.name }}"
+          echo "Checking/Creating project: $PROJECT_NAME..."
+          npx vercel project add "$PROJECT_NAME" --token=${{ secrets.VERCEL_TOKEN }} --yes || true
+          echo "Linking project..."
+          npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Sync Vercel Settings
         env:
