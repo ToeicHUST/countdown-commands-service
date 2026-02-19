@@ -55,7 +55,7 @@
     "@nestjs/testing": "^11.1.13",
     "@testcontainers/mongodb": "^11.11.0",
     "@testcontainers/postgresql": "^11.11.0",
-    "@testcontainers/redis": "^11.11.0",
+    "@testcontainers/redis": "^11.12.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.2.2",
